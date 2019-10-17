@@ -3,14 +3,9 @@
 
 typedef struct		s_list
 {
-	int				id;
-	int 			h_axis;
-	int 			v_axis;
-	struct s_list	*right;
-	struct s_list	*left;
-	struct s_list	*up;
-	struct s_list	*down;
-	int 			cell;
+	struct s_list	*next;
+	unsigned int	tetromap[16];
+	int 			tetromino; // шифрованная в 16 битах последовательность расположения фигур, плюс надо держать еще формулу расположения по координатам
 }					node;
 
 #endif
