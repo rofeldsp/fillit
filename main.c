@@ -189,7 +189,7 @@ int 	deploy(node *tetr, int tetramount)
 	{
 		if (fillmap(map, sqrsize, tetrline, tetr) == -1)
 		{
-			while (tetr->next != NULL) // можно ли так написать, или надо
+			while (tetr->next != NULL) // можно ли так написать, или надiо
 				// tetr->next не равно нулю и после цикла еще одна итерация
 			{
 				movetostart(tetr, sqrsize, tetrline);
