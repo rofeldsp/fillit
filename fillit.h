@@ -4,6 +4,7 @@
 typedef struct		s_list
 {
 	struct s_list	*next;
+	struct s_list	*prev;
 	unsigned int	tetromap[16];
 	//int 			tetromino; // шифрованная в 16 битах последовательность
 	// расположения фигур, плюс надо держать еще формулу расположения по координатам

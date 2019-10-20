@@ -78,23 +78,131 @@ int 	move(node *tetr, int tetrline, int sqrsize)
 	return (1);
 }
 
-int 	checkmap(int *map, int sqrsize, int tetrline, node *tetr) {
-	if (tetrline == sqrsize) // проверяем, что текущий ряд входит в карту
-		return (0);
-	if ((map[tetrline] | tetr->tetromap[tetrline]) == (map[tetrline] ^ tetr->tetromap[tetrline])) // проверяем, что первый ряд тетроминошки влезает
+int 	checkmap(unsigned int *map, int sqrsize, int tetrline, node *tetr) {
+	while (1)
 	{
-		if (checkmap(map, sqrsize, tetrline + 1, tetr) >= 0) // рекурсивно проверяем след ряд
-			map[tetrline] |= tetr->tetromap[tetrline]; // если все ок, то
-			// заполняем карту нашей фигурой
+		if (tetrline == sqrsize) // проверяем, что текущий ряд входит в карту
+			return (0);
+		if ((map[tetrline] | tetr->tetromap[tetrline]) == (map[tetrline] ^
+		tetr->tetromap[tetrline])) // проверяем, что первый ряд тетроминошки влезает
+		{
+			if (checkmap(map, sqrsize, tetrline + 1, tetr) >=
+				0) // рекурсивно проверяем след строку
+				map[tetrline] |= tetr->tetromap[tetrline]; // если все ок, то
+				// заполняем карту нашей фигурой
+			else if (move(tetr, tetrline, sqrsize) > 0)
+				if (checkmap(map, sqrsize, tetrline, tetr) >= 0)
+					map[tetrline] |= tetr->tetromap[tetrline]; // если все ок, то
+				else
+					return (-1);
+			else
+				return (-1);
+		}
 		else if (move(tetr, tetrline, sqrsize) > 0)
 			if (checkmap(map, sqrsize, tetrline, tetr) >= 0)
-				return (1);
+				map[tetrline] |= tetr->tetromap[tetrline]; // если все ок, то
+			else
+				return (-1);
 		else
-			return (-1); // вот тут надо возвращаться и двигать фигуру, а потом уже если не найдено решение возврашать 0
+			return (-1);
+		return (1);
 	}
-	else
-		return (-1); // we should mpve the block here too.
+}
+
+void	clearmap(unsigned int *map, int sqrsize, int tetrline, node *tetr)
+{
+	while (tetrline < sqrsize)
+	{
+		map[tetrline] ^= tetr->tetromap[tetrline];
+		tetrline++;
+	}
+}
+
+int 	moveprevnode(unsigned int *map, int sqrsize, int tetrline, node *tetr)
+{
+	clearmap(map, sqrsize, tetrline, tetr = tetr->prev);
+	if (move (tetr, tetrline, sqrsize) < 0)
+		return (-1);
 	return (1);
+}
+
+void	movetostart(node *tetr, int sqrsize, int tetrline)
+{
+	int		buff;
+
+	while (tetr->tetromap[tetrline == 0])
+		tetrline++;
+	buff = tetrline;
+	while (tetr->tetromap[buff] != 0 || buff != sqrsize)
+	{
+		tetr->tetromap[buff - tetrline] = tetr->tetromap[buff];
+		buff++;
+	}
+	while (1)
+	{
+		tetrline = -1;
+		while (++tetrline < sqrsize)
+			if ((tetr->tetromap[tetrline] & 32786) == 32786)
+				return ;
+		tetrline = -1;
+		while (++tetrline < sqrsize) // проверить, что начинаем с нуля здесь
+			tetr->tetromap[tetrline] <<= 1;
+	}
+}
+
+int 	fillmap(unsigned int *map, int sqrsize, int tetrline, node *tetr)
+{
+	while (1)
+	{
+		if (checkmap(map, sqrsize, tetrline, tetr) == -1)
+		{
+			while (1)
+				if (moveprevnode(map, sqrsize, tetrline, tetr) == -1)
+				{
+					movetostart(tetr, sqrsize, tetrline);
+					tetr = tetr->prev;
+				}
+				else
+				{
+					if (tetr->next == NULL)
+						return (-1);
+					movetostart(tetr, sqrsize, tetrline);
+					tetr = tetr->prev->prev;
+					break ;
+				}
+		}
+		if (tetr->next == NULL)
+			return (1);
+		tetr = tetr->next;
+	}
+}
+
+int 	deploy(node *tetr, int tetramount)
+{
+	unsigned short	map[16];
+	int 			sqrsize;
+	int 			tetrline;
+
+	tetrline = 0;
+	sqrsize = 4 * tetramount;
+	while (1)
+	{
+		if (fillmap(map, sqrsize, tetrline, tetr) == -1)
+		{
+			while (tetr->next != NULL) // можно ли так написать, или надо
+				// tetr->next не равно нулю и после цикла еще одна итерация
+			{
+				movetostart(tetr, sqrsize, tetrline);
+				tetr = tetr->next;
+			}
+			movetostart(tetr, sqrsize, tetrline);
+			while (tetr->prev != NULL)
+				tetr = tetr->prev;
+			sqrsize++;
+		}
+		else
+			return (1);
+	}
 }
 
 /*
