@@ -177,19 +177,28 @@ int 	fillmap(unsigned int *map, int sqrsize, int tetrline, node *tetr)
 	}
 }
 
-int 	deploy(node *tetr, int tetramount)
+unsigned short	*create_map(void)
 {
 	unsigned short	map[16];
-	int 			sqrsize;
-	int 			tetrline;
+	int				i;
 
-	tetrline = 0;
+	i = 0;
+	while (i < 16)
+		map[i++] = 0;
+}
+
+int 	deploy(node *tetr, int tetramount, int tetrline)
+{
+	unsigned short	*map;
+	int 			sqrsize;
+
 	sqrsize = 4 * tetramount;
+	map = create_map();
 	while (1)
 	{
 		if (fillmap(map, sqrsize, tetrline, tetr) == -1)
 		{
-			while (tetr->next != NULL) // можно ли так написать, или надiо
+			while (tetr->next != NULL) // можно ли так написать, или надо
 				// tetr->next не равно нулю и после цикла еще одна итерация
 			{
 				movetostart(tetr, sqrsize, tetrline);
@@ -201,10 +210,99 @@ int 	deploy(node *tetr, int tetramount)
 			sqrsize++;
 		}
 		else
-			return (1);
+			return (sqrsize);
 	}
 }
 
+int 	checkwidth(node *tetr)
+{
+	int		i;
+
+	i = 0;
+	if ((tetr->tetromap[0] & 4096) == 4096)
+		return (4);
+	while (i < 4)
+	{
+		if (tetr->tetromap[i] & 8192)
+			return (3);
+		i++;
+	}
+	if ((tetr->tetromap[3] & 32768) == 32768)
+		return (1);
+	else
+		return (2);
+}
+
+node	*addnode(unsigned int tetromino, node **head, int tetrnum)
+{
+	node	*tetr;
+
+	tetr = (node*)malloc(sizeof(node));
+	if (tetr == NULL)
+		return (NULL); // обработать ошибку
+	tetr->tetromap = (unsigned int *)malloc(sizeof(short) * 16);
+	tetr->prev = *head;
+	tetr->next = NULL;
+	tetr->tetromap[0] = tetromino[tetrnum] & 61440;
+	tetr->tetromap[1] = (tetromino[tetrnum] & 3840) << 4;
+	tetr->tetromap[2] = (tetromino[tetrnum] & 240) << 8;
+	tetr->tetromap[3] = (tetromino[tetrnum] & 15) << 12;
+	tetr->width = checkwidth(tetr);
+	return (tetr);
+}
+
+node	*creatstruct(unsigned int *tetromino)
+{
+	int		tetrnum;
+	node	*tetr;
+
+	tetr = (node*)malloc(sizeof(node));
+	if (tetr == NULL)
+		return (NULL); //обработать ошибку
+	tetr->tetromap = (unsigned int *)malloc(sizeof(short) * 16);
+	tetr->prev = NULL;
+	tetr->next = NULL;
+	tetr->tetromap[0] = (tetromino[0] & 61440);
+	tetr->tetromap[3] = ((tetromino[0] & 15) << 12);
+	tetr->width = checkwidth(tetr);
+	tetrnum = 1;
+	while (tetromino[tetrnum])
+	{
+		tetr->next = addnode(tetromino, tetr, tetrnum);
+		tetr = tetr->next;
+	}
+	while (tetr->prev != NULL)
+		tetr = tetr->prev;
+	return (tetr);
+}
+
+int 	printfigure(node *tetr, int sqrsize, char letter)
+{
+	char		*map; // надо создать отдельную функцию создания карты, ее
+	// вызывать в мейне, а потом уже в цикле вызывать эту функцию.
+	int 		i;
+	int			j;
+
+	i = 0;
+	map = (char*)malloc(sizeof(char) * (sqrsize + 1) * 4);
+	if (map == NULL)
+		return (0); // обрабать ошибку
+	while (i < (sqrsize + 1) * 4)
+	{
+		j = 0;
+		while (j < sqrsize)
+		{
+			if ((tetr->tetromap[0] & ftpow(2, 16 - sqrsize + j)) != 0)
+				map[i + j] = letter;
+			else
+				map[i + j] = '0';
+			j++;
+		}
+		map[i + j] = '\n';
+		i += (sqrsize + 1);
+	}
+	return (map);
+}
 /*
 int 	linebreaktwoways(node *cell, int tetrline, int sqrsize)
 {
