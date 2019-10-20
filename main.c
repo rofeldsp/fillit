@@ -276,7 +276,7 @@ node	*creatstruct(unsigned int *tetromino)
 	return (tetr);
 }
 
-int 	printfigure(node *tetr, int sqrsize, char letter)
+char 	*printfigure(node *tetr, int sqrsize, char letter)
 {
 	char		*map; // надо создать отдельную функцию создания карты, ее
 	// вызывать в мейне, а потом уже в цикле вызывать эту функцию.
