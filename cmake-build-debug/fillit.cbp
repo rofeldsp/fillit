@@ -80,6 +80,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/rofeldsp/fillit/libft/libft.h">
+			<Option target="fillit.h"/>
+		</Unit>
 		<Unit filename="/Users/rofeldsp/fillit/main.c">
 			<Option target="fillit.h"/>
 		</Unit>

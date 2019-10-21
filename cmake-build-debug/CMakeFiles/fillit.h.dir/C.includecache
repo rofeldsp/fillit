@@ -7,6 +7,12 @@
 #IncludeRegexTransform: 
 
 /Users/rofeldsp/fillit/fillit.h
+stdio.h
+-
+stdlib.h
+-
+libft/libft.h
+-
 
 /Users/rofeldsp/fillit/main.c
 stdio.h

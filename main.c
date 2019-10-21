@@ -236,22 +236,26 @@ int 	checkwidth(node *tetr)
 node	*addnode(unsigned int tetromino, node **head, int tetrnum)
 {
 	node	*tetr;
+	int		i;
 
 	tetr = (node*)malloc(sizeof(node));
 	if (tetr == NULL)
 		return (NULL); // обработать ошибку
-	tetr->tetromap = (unsigned int *)malloc(sizeof(short) * 16);
+	tetr->tetromap = (unsigned short *)malloc(sizeof(short) * 16);
 	tetr->prev = *head;
 	tetr->next = NULL;
 	tetr->tetromap[0] = tetromino[tetrnum] & 61440;
 	tetr->tetromap[1] = (tetromino[tetrnum] & 3840) << 4;
 	tetr->tetromap[2] = (tetromino[tetrnum] & 240) << 8;
 	tetr->tetromap[3] = (tetromino[tetrnum] & 15) << 12;
+	i = 3;
+	while (++i < 16)
+		tetr->tetromap[i] = 0;
 	tetr->width = checkwidth(tetr);
 	return (tetr);
 }
 
-node	*creatstruct(unsigned int *tetromino)
+node	*createstruct(unsigned short *tetromino)
 {
 	int		tetrnum;
 	node	*tetr;
@@ -276,17 +280,33 @@ node	*creatstruct(unsigned int *tetromino)
 	return (tetr);
 }
 
-char 	*printfigure(node *tetr, int sqrsize, char letter)
+char		*map_to_print(int sqrsize)
 {
-	char		*map; // надо создать отдельную функцию создания карты, ее
-	// вызывать в мейне, а потом уже в цикле вызывать эту функцию.
+	int		i;
+	int		j
+	char 	*map;
+
+	map = (char*)malloc(sizeof(char) * (sqrsize + 1) * 4);
+	if (map == NULL)
+		return (NULL); // обработать в принимающей функции эту ошибку
+	i = 0;
+	while (i < ((sqrsize + 1) * 4)
+	{
+		j = -1;
+		while (++j < sqrsize)
+			map[i + j] = '0';
+		map[i + j] = '\n'; // должна ли карта в конце иметь перенос?
+		i += (sqrsize + 1)
+	}
+	return (map);
+}
+
+char 	*fillfigure(char *map, node *tetr, int sqrsize, char letter)
+{
 	int 		i;
 	int			j;
 
 	i = 0;
-	map = (char*)malloc(sizeof(char) * (sqrsize + 1) * 4);
-	if (map == NULL)
-		return (0); // обрабать ошибку
 	while (i < (sqrsize + 1) * 4)
 	{
 		j = 0;
@@ -294,118 +314,39 @@ char 	*printfigure(node *tetr, int sqrsize, char letter)
 		{
 			if ((tetr->tetromap[0] & ftpow(2, 16 - sqrsize + j)) != 0)
 				map[i + j] = letter;
-			else
-				map[i + j] = '0';
 			j++;
 		}
-		map[i + j] = '\n';
 		i += (sqrsize + 1);
 	}
 	return (map);
 }
-/*
-int 	linebreaktwoways(node *cell, int tetrline, int sqrsize)
-{
-	if (tetrline + 2 > sqrsize)
-		return (0);
-	cell->tetromap[tetrline] >>= 2;
-	cell->tetromap[tetrline - 1] >>= 2;
-	cell->tetromap[tetrline + 1] >>= 2;
-	cell->tetromap[tetrline + 1] = cell->tetromap[tetrline + 1] | 49152;
-	cell->tetromap[tetrline] = cell->tetromap[tetrline + 1] | 32768;
-	cell->tetromap[tetrline + 2] = cell->tetromap[tetrline + 1] | 32768;
-	return (1);
-}
 
-int		linebreakreverse(node *cell, int tetrline, int sqrsize)
-{
-	int		tetrlength;
-	int 	tetrheight;
-
-	tetrlength = 2;
-	tetrheight = 1;
-	if (cell->tetromap[tetrline] &= ftpow(2, 16 - sqrsize + 2))
-		tetrlength = 3;
-	if (cell->tetromap[tetrline - 2] != 0)
-		tetrheight = 2;
-	cell->tetromap[tetrline] >>= tetrlength;
-	cell->
-
-
-
-}
-
-int     linebreak(node *cell, int sqrsize, int tetrline, int flag)
-{
-	if (tetrline > sqrsize)
-		return (0);
-	if (cell->tetromap[tetrline] &= ftpow(2, 16 - sqrsize)) // не сработает,
-		// тут присвоение идет
-	{
-		if ((cell->tetromap[tetrline + 1] == 0) && flag == 0 &&
-		cell->tetromap[tetrline - 1] != 0)
-			linebreakreverse
-		if ((cell->tetromap[tetrline + 1] != 0) && flag == 0 &&
-				(cell->tetromap[tetrline - 1] != 0))
-			if (linebreaktwoways(cell, tetrline, sqrsize) > 0)
-				return (1);
-			else
-				return (0);
-		if (tetrline == sqrsize)
-			return (-1);
-		else
-		{
-			cell->tetromap[tetrline] >>= 1; // решить вопрос с переносом
-			// фигуру, где переносить надо не один раз
-			if ((cell->tetromap[tetrline + 1] | 0) != 0)
-				if (linebreak(cell, sqrsize, tetrline + 1, flag = 1) > 0)
-					cell->tetromap[tetrline + 1] = cell->tetromap[tetrline + 1] |
-					32768;
-				else
-					return (-1);
-			else
-				cell->tetromap[tetrline + 1] = cell->tetromap[tetrline + 1] |
-						32768;
-			return (1);
-		}
-	}
-	else if (flag > 0)
-		cell->tetromap[tetrline] >>= 1;
-	linebreak(cell, sqrsize, tetrline + 1, flag);
-	return (1);
-}
-
-int     linebreak(node *cell, int sqrsize, int tetrline)
-{
-	int		ret;
-
-	if (tetrline > sqrsize) // проверяем, что текущий ряд входит в карту
-		return (0);
-	if (cell->tetromap[tetrline] & ftpow(2, 16 - sqrsize) == ftpow(2, 16 - sqrsize))
-	{
-		if ((ret = (linebreak(cell, sqrsize, tetrline + 1))) > 0)
-		{
-			cell->tetromap[tetrline] >> 1;
-			if ((cell->tetromap[tetrline + 1] | 0) != 0)
-				cell->tetromap[tetrline + 1] | 32768;
-		}
-		else
-			return (-1);
-	}
-	else
-		return (2);
-	return (1);
-}
-*/
 int main()
 {
-	int a;
+	int 	i;
 	clock_t start, end;
-	double cpu_time_used;
+	double 	cpu_time_used;
+	char 	*map;
+	unsigned short	*tetro;
+	int		sqrsize;
+	node	*tetr;
+	char 	letter;
+	int		tetramount;
 
+	letter = 65;
 	start = clock();
-	a = 1737;
-	printf("%d\n", ftpow(a, 245));
+	map = map_to_print(sqrsize);
+	tetr = createstruct(tetro);
+	sqrsize = deploy(tetr, tetramount,0);
+	i = 0;
+	while (++i < tetramount)
+	{
+		map = fillfigure(map, tetr, sqrsize, letter);
+		letter++;
+		tetr = tetr->next;
+	}
+	ft_putstr(map);
+	free(map);
 	end = clock();
 	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 	printf("time %f\n", cpu_time_used);
