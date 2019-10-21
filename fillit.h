@@ -3,13 +3,13 @@
 
 # include <stdio.h> // remove later
 # include <stdlib.h>
-# include <libft/libft.h> // substitute to libft.h and add trace to makefile
+# include "libft/libft.h" // substitute to libft.h and add trace to makefile
 
-typedef struct		s_list
+typedef struct		t_list
 {
-	struct s_list	*next;
-	struct s_list	*prev;
-	unsigned short	tetromap[16];
+	struct t_list	*next;
+	struct t_list	*prev;
+	unsigned short	*tetromap;
 	//int 			tetromino; // шифрованная в 16 битах последовательность
 	// расположения фигур, плюс надо держать еще формулу расположения по координатам
 	int 			width;

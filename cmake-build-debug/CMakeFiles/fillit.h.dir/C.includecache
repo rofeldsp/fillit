@@ -12,6 +12,14 @@ stdio.h
 stdlib.h
 -
 libft/libft.h
+/Users/rofeldsp/fillit/libft/libft.h
+
+/Users/rofeldsp/fillit/libft/libft.h
+unistd.h
+-
+stdlib.h
+-
+string.h
 -
 
 /Users/rofeldsp/fillit/main.c
