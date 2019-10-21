@@ -136,6 +136,8 @@ void	clearmap(unsigned short *map, int sqrsize, int tetrline, node *tetr)
 
 int 	moveprevnode(unsigned short *map, int sqrsize, int tetrline, node *tetr)
 {
+	if (tetr->prev == NULL)
+		return (-1);
 	clearmap(map, sqrsize, tetrline, tetr = tetr->prev);
 	if (move (tetr, tetrline, sqrsize) < 0)
 		return (-1);
@@ -146,7 +148,7 @@ void	movetostart(node *tetr, int sqrsize, int tetrline)
 {
 	int		buff;
 
-	while (tetr->tetromap[tetrline == 0])
+	while (tetr->tetromap[tetrline] == 0) // изменение
 		tetrline++;
 	buff = tetrline;
 	while (tetr->tetromap[buff] != 0 || buff != sqrsize)
@@ -158,7 +160,7 @@ void	movetostart(node *tetr, int sqrsize, int tetrline)
 	{
 		tetrline = -1;
 		while (++tetrline < sqrsize)
-			if ((tetr->tetromap[tetrline] & 32786) == 32786)
+			if ((tetr->tetromap[tetrline] & 32768) == 32768)
 				return ;
 		tetrline = -1;
 		while (++tetrline < sqrsize) // проверить, что начинаем с нуля здесь
@@ -173,18 +175,25 @@ int 	fillmap(unsigned short *map, int sqrsize, int tetrline, node *tetr)
 		if (checkmap(map, sqrsize, tetrline, tetr) == -1)
 		{
 			while (1)
-				if (moveprevnode(map, sqrsize, tetrline, tetr) == -1)
+				if (moveprevnode(map, sqrsize, tetrline, tetr) == -1) // если
+					// не удалось подвинуть предыдущую фигуру на 1 клетку, то
+					// возвращаемся на фигуру назад и пробуем ее двигать.
 				{
 					movetostart(tetr, sqrsize, tetrline);
 					tetr = tetr->prev;
 				}
-				else
+				else // если удалось, то проверяем, то возвращаем в крайнее
+				// левое положение текущую фигуру, а указатель смещаем на 2
+				// листа назад, чтобы в новой итерации цикла while работать с
+				// предыдущим листом.
 				{
-					if (tetr->next == NULL)
+//					if (tetr->next == NULL)
+//						return (-1);
+					if (tetr->prev == NULL || tetr->prev->prev == NULL)
 						return (-1);
 					movetostart(tetr, sqrsize, tetrline);
 					tetr = tetr->prev->prev;
-					break ;
+					break;
 				}
 		}
 		if (tetr->next == NULL)
