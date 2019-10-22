@@ -18,22 +18,16 @@ int     ftpow(int number, int power)
 	return (number);
 }
 
-int	ft_sqrt(int nb)
+int	ft_sqrt_round(int nb)
 {
 	int a;
 
 	a = 1;
 	if (nb > 2147483647)
 		return (0);
-	while (a < nb / 2)
-	{
-		if (a * a == nb)
-			return (a);
+	while (a * a < nb)
 		a++;
-	}
-	if (nb % a == 0)
-		return (a);
-	return (0);
+	return (a);
 }
 
 int 	clearnumber(int sqrsize)
@@ -128,7 +122,10 @@ int 	checkmap(unsigned short *map, int sqrsize, int tetrline, node *tetr) {
 		if (tetrline == sqrsize) // проверяем, что текущий ряд входит в карту
 			return (0);
 		if ((map[tetrline] | tetr->tetromap[tetrline]) == (map[tetrline] ^
-		tetr->tetromap[tetrline])) // проверяем, что первый ряд тетроминошки влезает
+		tetr->tetromap[tetrline]) && sqrsize >= tetr->width) // проверяем, что
+			// первый
+			// ряд
+			// тетроминошки влезает
 		{
 			if (checkmap(map, sqrsize, tetrline + 1, tetr) >=
 				0) // рекурсивно проверяем след строку
@@ -217,6 +214,8 @@ int 	fillmap(unsigned short *map, int sqrsize, int tetrline, node *tetr)
 					// возвращаемся на фигуру назад и пробуем ее двигать.
 				{
 					movetostart(tetr, sqrsize, tetrline);
+					if (tetr->prev == NULL)
+						return (-1);
 					tetr = tetr->prev;
 				}
 				else // если удалось, то проверяем, то возвращаем в крайнее
@@ -262,7 +261,7 @@ int 	deploy(node *tetr, int tetramount, int tetrline)
 	unsigned short	*map;
 	int 			sqrsize;
 
-	sqrsize = ft_sqrt(4 * tetramount);
+	sqrsize = ft_sqrt_round(4 * tetramount);
 	map = create_map();
 	while (1)
 	{
@@ -413,12 +412,25 @@ int main()
 	char 	letter;
 	int		tetramount;
 
-	tetramount = 4;
+	tetramount = 13;
 	tetro = (unsigned short *)malloc(sizeof(short) * tetramount);
+//	tetro[0] = 57856;
 	tetro[0] = 52224;
-	tetro[1] = 57856;
-	tetro[2] = 35008;
-	tetro[3] = 50688;
+	tetro[1] = 35968;
+	tetro[2] = 27648;
+	tetro[3] = 52224;
+	tetro[4] = 19584;
+	tetro[5] = 57856;
+	tetro[6] = 50240;
+	tetro[7] = 52224;
+	tetro[8] = 27648;
+	tetro[9] = 50240;
+	tetro[10] = 35904;
+	tetro[11] = 58368;
+//	tetro[0] = 52224;
+//	tetro[1] = 57856;
+//	tetro[2] = 35008;
+//	tetro[3] = 50688;
 //	tetro[4] = 19520;
 //	tetro[5] = 35968;
 //	tetro[6] = 50688;
