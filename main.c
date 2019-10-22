@@ -200,7 +200,7 @@ void	movetostart(node *tetr, int sqrsize, int tetrline)
 			if ((tetr->tetromap[tetrline] & 32768) == 32768)
 				return ;
 		tetrline = -1;
-		while (++tetrline < sqrsize) // проверить, что начинаем с нуля здесь
+		while (++tetrline < sqrsize) // проверить, что начинаем с 0 здесь
 			tetr->tetromap[tetrline] <<= 1;
 	}
 }
