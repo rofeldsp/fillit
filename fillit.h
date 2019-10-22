@@ -10,6 +10,7 @@ typedef struct		t_list
 	struct t_list	*next;
 	struct t_list	*prev;
 	unsigned short	*tetromap;
+	unsigned short	*buff;
 	//int 			tetromino; // шифрованная в 16 битах последовательность
 	// расположения фигур, плюс надо держать еще формулу расположения по координатам
 	int 			width;
