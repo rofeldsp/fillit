@@ -15,6 +15,7 @@ int     ftpow(int number, int power)
 		i++;
 	}
 	number = cache[power];
+//	printf("1");
 	return (number);
 }
 
@@ -30,16 +31,16 @@ int	ft_sqrt_round(int nb)
 	return (a);
 }
 
-int 	clearnumber(int sqrsize)
+int 	clearnumber(int sqrsize, node *tetr)
 {
 	int num;
 	int power;
 
-	num = ftpow(2, 15);
+	num = 32768;
 	power  = 14;
 	while (sqrsize > 0)
 	{
-		num = num * ftpow(2, power);
+		num = num * tetr->power[power];
 		power--;
 		sqrsize--;
 	}
@@ -60,24 +61,26 @@ int 	linebreak2(node *tetr, int tetrline, int sqrsize)
 	cell2 = 0;
 	cell3 = 0;
 	cell4 = 0;
-	if ((tetr->tetromap[tetrline] & ftpow(2, 19 - sqrsize)) == ftpow(2, 19
-																		- sqrsize))
-		cell1 = ftpow(2, 19 - sqrsize); // проверяем, есть ли единичка на 4
+	if ((tetr->tetromap[tetrline] & tetr->power[19 - sqrsize]) == // работает
+	// ли такой перенос при размере квадрата 2???? - по идее нет, надо менять
+	tetr->power[19 - sqrsize])
+		cell1 = tetr->power[19 - sqrsize]; // проверяем, есть ли единичка на 4
 		// клетке с конца
-	if ((tetr->tetromap[tetrline] & ftpow(2, 18 - sqrsize)) == ftpow(2, 18 -
-																		sqrsize))
-		cell2 = ftpow(2, 18 - sqrsize);
-	if ((tetr->tetromap[tetrline] & ftpow(2, 17 - sqrsize)) == ftpow(2, 17 -
-																		sqrsize))
-		cell3 = ftpow(2, 17 - sqrsize);
-	if ((tetr->tetromap[tetrline] & ftpow(2, 16 - sqrsize)) == ftpow(2, 16 -
-																		sqrsize))
-		cell4 = ftpow(2, 16 - sqrsize);
+	if ((tetr->tetromap[tetrline] & tetr->power[18 - sqrsize]) ==
+		tetr->power[18 - sqrsize])
+		cell2 = tetr->power[18 - sqrsize];
+	if ((tetr->tetromap[tetrline] & tetr->power[17 - sqrsize]) ==
+		tetr->power[17 - sqrsize])
+		cell3 = tetr->power[17 - sqrsize];
+	if ((tetr->tetromap[tetrline] & tetr->power[16 - sqrsize]) ==
+		tetr->power[16 - sqrsize])
+		cell4 = tetr->power[16 - sqrsize];
 	if (tetrline == sqrsize - 1)
 		return (tetr->tetromap[tetrline] != 0 ? -1 : 0);
 	tetr->tetromap[tetrline] >>= tetr->width; // надо чистить то, что
 	// осталось за пределами sqrsize
-	tetr->tetromap[tetrline] &= clearnumber(sqrsize); // как раз чистим все за
+	tetr->tetromap[tetrline] &= clearnumber(sqrsize, tetr); // как раз чистим
+	// все за
 	// пределами
 	// четырех элементов
 	if (linebreak2(tetr, tetrline + 1, sqrsize) < 0)
@@ -93,8 +96,8 @@ int 	linebreak(node *tetr, int sqrsize)
 
 	tetrline = 0;
 	while (tetrline < sqrsize) {
-		if ((tetr->tetromap[tetrline] & ftpow(2, 16 - sqrsize)) == ftpow(2,
-																		 16 - sqrsize))
+		if ((tetr->tetromap[tetrline] & tetr->power[16 - sqrsize]) ==
+		tetr->power[16 - sqrsize])
 			return (linebreak2(tetr, tetrline = 0, sqrsize) == -1 ? -1 : 1);
 		tetrline++;
 	}
@@ -240,8 +243,6 @@ int 	fillmap(unsigned short *map, int sqrsize, int tetrline, node *tetr)
 				// листа назад, чтобы в новой итерации цикла while работать с
 				// предыдущим листом.
 				{
-//					if (tetr->next == NULL)
-//						return (-1);
 					if (tetr->prev == NULL)
 						return (-1);
 //					movetostart(tetr, sqrsize, tetrline);
@@ -287,7 +288,6 @@ int 	deploy(node *tetr, int tetramount, int tetrline)
 		if (fillmap(map, sqrsize, tetrline, tetr) == -1)
 		{
 			while (tetr->next != NULL) // можно ли так написать, или надо
-				// tetr->next не равно нулю и после цикла еще одна итерация
 			{
 //				movetostart(tetr, sqrsize, tetrline);
 				free(tetr->tetromap);
@@ -325,72 +325,6 @@ int 	checkwidth(node *tetr)
 		return (2);
 }
 
-node	*addnode(unsigned short *tetromino, node *head, int tetrnum)
-{
-	node	*tetr;
-	int		i;
-
-	tetr = (node*)malloc(sizeof(node));
-	if (tetr == NULL)
-		return (NULL); // обработать ошибку
-	tetr->tetromap = (unsigned short *)malloc(sizeof(short) * 16);
-//	tetr->buff = (unsigned short *)malloc(sizeof(short) * 16);
-	tetr->prev = head;
-	tetr->next = NULL;
-	tetr->tetromap[0] = (tetromino[tetrnum] & 61440);
-//	tetr->buff[0] = (tetromino[tetrnum] & 61440);
-	tetr->tetromap[1] = (tetromino[tetrnum] & 3840) << 4;
-//	tetr->buff[1] = (tetromino[tetrnum] & 3840) << 4;
-	tetr->tetromap[2] = (tetromino[tetrnum] & 240) << 8;
-//	tetr->buff[2] = (tetromino[tetrnum] & 240) << 8;
-	tetr->tetromap[3] = ((tetromino[tetrnum] & 15) << 12);
-//	tetr->buff[3] = ((tetromino[tetrnum] & 15) << 12);
-	i = 3;
-	while (++i < 16)
-		tetr->tetromap[i] = 0;
-	tetr->width = checkwidth(tetr);
-	tetr->buff = copy_tetromap(tetr->tetromap);
-	return (tetr);
-}
-
-node	*createstruct(unsigned short *tetromino, int tetramount)
-{
-	int		tetrnum;
-	node	*tetr;
-	int		i;
-
-	tetr = (node*)malloc(sizeof(node));
-	if (tetr == NULL)
-		return (NULL); //обработать ошибку
-	tetr->tetromap = (unsigned short *)malloc(sizeof(short) * 16);
-//	tetr->buff = (unsigned short *)malloc(sizeof(short) * 16);
-	tetr->prev = NULL;
-	tetr->next = NULL;
-	tetr->tetromap[0] = (tetromino[0] & 61440);
-//	tetr->buff[0] = (tetromino[0] & 61440);
-	tetr->tetromap[1] = (tetromino[0] & 3840) << 4;
-//	tetr->buff[1] = (tetromino[0] & 3840) << 4;
-	tetr->tetromap[2] = (tetromino[0] & 240) << 8;
-//	tetr->buff[2] = (tetromino[0] & 240) << 8;
-	tetr->tetromap[3] = ((tetromino[0] & 15) << 12);
-//	tetr->buff[3] = ((tetromino[0] & 15) << 12);
-	i = 3;
-	while (++i < 16)
-		tetr->tetromap[i] = 0;
-	tetr->width = checkwidth(tetr);
-	tetr->buff = copy_tetromap(tetr->tetromap);
-	tetrnum = 1;
-	while (tetrnum < tetramount)
-	{
-		tetr->next = addnode(tetromino, tetr, tetrnum);
-		tetr = tetr->next;
-		tetrnum++;
-	}
-	while (tetr->prev != NULL)
-		tetr = tetr->prev;
-	return (tetr);
-}
-
 char		*map_to_print(int sqrsize)
 {
 	int		i;
@@ -425,7 +359,7 @@ char 	*fillfigure(char *map, node *tetr, int sqrsize, char letter)
 		j = 0;
 		while (j < sqrsize)
 		{
-			if ((tetr->tetromap[a] & ftpow(2, 15 - j)) != 0)
+			if ((tetr->tetromap[a] & tetr->power[15 - j]) != 0)
 				map[i + j] = letter;
 			j++;
 		}
@@ -433,6 +367,76 @@ char 	*fillfigure(char *map, node *tetr, int sqrsize, char letter)
 		i += (sqrsize + 1);
 	}
 	return (map);
+}
+
+node	*addnode(unsigned short *tetromino, node *head, int tetrnum)
+{
+	node	*tetr;
+	int		i;
+
+	tetr = (node*)malloc(sizeof(node));
+	if (tetr == NULL)
+		return (NULL); // обработать ошибку
+	tetr->tetromap = (unsigned short *)malloc(sizeof(short) * 16);
+	i = 0;
+	tetr->power = (unsigned short *)malloc(sizeof(short) * 16);
+	while (i < 16)
+	{
+		tetr->power[i] = ftpow(2, i);
+		i++;
+	}
+	tetr->prev = head;
+	tetr->next = NULL;
+	tetr->tetromap[0] = (tetromino[tetrnum] & 61440);
+	tetr->tetromap[1] = (tetromino[tetrnum] & 3840) << 4;
+	tetr->tetromap[2] = (tetromino[tetrnum] & 240) << 8;
+	tetr->tetromap[3] = ((tetromino[tetrnum] & 15) << 12);
+	i = 3;
+	while (++i < 16)
+		tetr->tetromap[i] = 0;
+	tetr->width = checkwidth(tetr);
+	tetr->buff = copy_tetromap(tetr->tetromap);
+	return (tetr);
+}
+
+node	*createstruct(unsigned short *tetromino, int tetramount)
+{
+	int		tetrnum;
+	node	*tetr;
+	int		i;
+
+	tetr = (node*)malloc(sizeof(node));
+	if (tetr == NULL)
+		return (NULL); //обработать ошибку
+	tetr->tetromap = (unsigned short *)malloc(sizeof(short) * 16);
+	tetr->prev = NULL;
+	tetr->next = NULL;
+	tetr->tetromap[0] = (tetromino[0] & 61440);
+	tetr->tetromap[1] = (tetromino[0] & 3840) << 4;
+	tetr->tetromap[2] = (tetromino[0] & 240) << 8;
+	tetr->tetromap[3] = ((tetromino[0] & 15) << 12);
+	i = 3;
+	while (++i < 16)
+		tetr->tetromap[i] = 0;
+	i = 0;
+	tetr->power = (unsigned short *)malloc(sizeof(short) * 16);
+	while (i < 16)
+	{
+		tetr->power[i] = ftpow(2, i);
+		i++;
+	}
+	tetr->width = checkwidth(tetr);
+	tetr->buff = copy_tetromap(tetr->tetromap);
+	tetrnum = 1;
+	while (tetrnum < tetramount)
+	{
+		tetr->next = addnode(tetromino, tetr, tetrnum);
+		tetr = tetr->next;
+		tetrnum++;
+	}
+	while (tetr->prev != NULL)
+		tetr = tetr->prev;
+	return (tetr);
 }
 
 int main()
@@ -449,19 +453,18 @@ int main()
 
 	tetramount = 12;
 	tetro = (unsigned short *)malloc(sizeof(short) * tetramount);
-//	tetro[0] = 57856;
-	tetro[0] = 52224;
-	tetro[1] = 35968;
-	tetro[2] = 27648;
-	tetro[3] = 52224;
-	tetro[4] = 19584;
-	tetro[5] = 57856;
-	tetro[6] = 50240;
-	tetro[7] = 52224;
-	tetro[8] = 27648;
-	tetro[9] = 50240;
-	tetro[10] = 35904;
-	tetro[11] = 58368;
+//	tetro[0] = 52224;
+//	tetro[1] = 35968;
+//	tetro[2] = 27648;
+//	tetro[3] = 52224;
+//	tetro[4] = 19584;
+//	tetro[5] = 57856;
+//	tetro[6] = 50240;
+//	tetro[7] = 52224;
+//	tetro[8] = 27648;
+//	tetro[9] = 50240;
+//	tetro[10] = 35904;
+//	tetro[11] = 58368;
 //	tetro[12] = 58368;
 //	tetro[0] = 52224;
 //	tetro[1] = 57856;
