@@ -11,12 +11,12 @@ typedef struct		t_list
 	struct t_list	*prev;
 	uint64_t		tetromap;
 	uint64_t		buff;
-	unsigned short	power[64];
+	uint64_t		power[64];
 	int 			line;
 	//int 			tetromino; // шифрованная в 16 битах последовательность
 	// расположения фигур, и надо держать еще формулу расположения по
 	// координатам
-	int 			width;
+	int 			height;
 }					node;
 
 #endif
