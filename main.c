@@ -154,7 +154,7 @@ int 	moveprevnode(uint16_t *map, int sqrsize, node *tetr)
 	if (tetr->prev == NULL)
 		return (-1);
 	tetr = tetr->prev;
-	*(uint64_t *)(map + tetr->line) ^= tetr->tetromap;
+	*(uint64_t *)(map + 12 - tetr->line) ^= tetr->tetromap;
 	if (move (tetr, sqrsize) < 0)
 		return (-1);
 	return (1);
@@ -246,12 +246,12 @@ int 	checkheight(node *tetr)
 	i = 0;
 	if ((tetr->tetromap & tetr->power[59]) != 0)
 		return (1);
-	if ((tetr->tetromap & 211109453758464) != 0)
-		return (2);
+	if ((tetr->tetromap & 3221225472) != 0)
+		return (3);
 	if ((tetr->tetromap & 32768) != 0)
 		return (4);
 	else
-		return (3);
+		return (2);
 }
 
 char		*map_to_print(int sqrsize)
@@ -283,13 +283,15 @@ char 	*fillfigure(char *map, node *tetr, int sqrsize, char letter)
 
 	i = 0;
 	a = 0;
-	while (i < (sqrsize + 1) * (sqrsize - 1))
+	while (i <= (sqrsize + 1) * (sqrsize - 1))
 	{
 		j = 0;
 		while (j < sqrsize)
 		{
-			if ((tetr->tetromap & tetr->power[(63 - 16 * a - j)]) != 0)
-				map[i + j] = letter;
+			if (a >= tetr->line && a - tetr->line < 4)
+				if ((tetr->tetromap & tetr->power[(63 - 16 * (a -
+				tetr->line) - j)]) != 0)
+					map[i + j] = letter;
 			j++;
 		}
 		a++;
@@ -371,20 +373,20 @@ int main()
 	char 	letter;
 	int		tetramount;
 
-	tetramount = 4;
+	tetramount = 12;
 	tetro = (unsigned short *)malloc(sizeof(short) * tetramount);
 	tetro[0] = 52224;
 	tetro[1] = 35968;
 	tetro[2] = 27648;
 	tetro[3] = 52224;
-//	tetro[4] = 19584;
-//	tetro[5] = 57856;
-//	tetro[6] = 50240;
-//	tetro[7] = 52224;
-//	tetro[8] = 27648;
-//	tetro[9] = 50240;
-//	tetro[10] = 35904;
-//	tetro[11] = 58368;
+	tetro[4] = 19584;
+	tetro[5] = 57856;
+	tetro[6] = 50240;
+	tetro[7] = 52224;
+	tetro[8] = 27648;
+	tetro[9] = 50240;
+	tetro[10] = 35904;
+	tetro[11] = 58368;
 //	tetro[12] = 58368;
 //	tetro[0] = 52224;
 //	tetro[1] = 57856;
