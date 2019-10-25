@@ -158,7 +158,7 @@ int 	checkheight(node *tetr)
 	int		i;
 
 	i = 0;
-	if ((tetr->tetromap & tetr->power[59]) != 0)
+	if ((tetr->tetromap & tetr->power[60]) != 0)
 		return (1);
 	if ((tetr->tetromap & 3221225472) != 0)
 		return (3);
@@ -174,7 +174,7 @@ char		*map_to_print(int sqrsize)
 	int		j;
 	char 	*map;
 
-	map = (char*)malloc(sizeof(char) * (sqrsize + 1) * sqrsize);
+	map = (char*)malloc(sizeof(char) * ((sqrsize + 1) * sqrsize + 1));
 	if (map == NULL)
 		return (NULL);
 	i = 0;
@@ -186,6 +186,7 @@ char		*map_to_print(int sqrsize)
 		map[i + j] = '\n';
 		i += (sqrsize + 1);
 	}
+	map[i] = '\0';
 	return (map);
 }
 
@@ -214,7 +215,7 @@ char 	*fillfigure(char *map, node *tetr, int sqrsize, char letter)
 	return (map);
 }
 
-node	*addnode(unsigned short *t, node *head, int a)
+node	*addnode(unsigned short *t, node *head)
 {
 	node	*tetr;
 	int		i;
@@ -228,15 +229,27 @@ node	*addnode(unsigned short *t, node *head, int a)
 		tetr->power[i] = ftpow(2, i, tetr);
 		i++;
 	}
-	tetr->tetromap = ((((*(uint64_t *)(t + a)) & 61440) << 48) + (((*(uint64_t*)
-		(t + a)) & 3840) << 36) + (((*(uint64_t *)(t + a)) & 240) << 24) +
-		(((*(uint64_t *)(t + a)) & 15) >> 12));
+	tetr->tetromap = ((((*(uint64_t *)t) & 61440) << 48) + (((*(uint64_t *)t)
+	 & 3840) << 36) + (((*(uint64_t *)t) & 240) << 24) + (((*(uint16_t *)t) &
+	  15) << 12));
 	tetr->prev = head;
 	tetr->next = NULL;
 	tetr->line = 0;
 	tetr->height = checkheight(tetr);
 	tetr->buff = tetr->tetromap;
 	return (tetr);
+}
+
+void 	freelist(node *tetr)
+{
+	node	*tmp;
+
+	while (tetr != NULL)
+	{
+		tmp = tetr;
+		tetr = tetr->prev;
+		free(tmp);
+	}
 }
 
 node	*createstruct(unsigned short *t, int tetramount)
@@ -250,10 +263,11 @@ node	*createstruct(unsigned short *t, int tetramount)
 		return (NULL); //обработать ошибку
 	tetr->tetromap = ((((*(uint64_t *)t) & 61440) << 48) + (((*(uint64_t *)t)
 		& 3840) << 36) + (((*(uint64_t *)t) & 240) << 24) + (((*(uint64_t *)t) &
-		15) >> 12));
+		15) << 12));
 	tetr->prev = NULL;
 	tetr->next = NULL;
 	tetr->line = 0;
+	i = 0;
 	while (i < 64)
 	{
 		tetr->power[i] = ftpow(2, i, tetr);
@@ -264,7 +278,7 @@ node	*createstruct(unsigned short *t, int tetramount)
 	tetrnum = 1;
 	while (tetrnum < tetramount)
 	{
-		tetr->next = addnode(t, tetr, tetrnum);
+		tetr->next = addnode(t + tetrnum, tetr);
 		tetr = tetr->next;
 		tetrnum++;
 	}
@@ -286,7 +300,7 @@ int main()
 	int		tetramount;
 
 	tetramount = 12;
-	tetro = (unsigned short *)malloc(sizeof(short) * tetramount);
+	tetro = (uint16_t *)malloc(sizeof(uint16_t) * tetramount);
 //	tetro[0] = 52224;
 //	tetro[1] = 35968;
 //	tetro[2] = 27648;
@@ -312,6 +326,12 @@ int main()
 	tetro[9] = 61440;
 	tetro[10] = 57856;
 	tetro[11] = 50240;
+//	tetro[0] = 61440;
+//	tetro[1] = 50688;
+//	tetro[2] = 34952;
+//	tetro[3] = 50240;
+//	tetro[4] = 35008;
+//	tetro[5] = 50688;
 //	tetro[12] = 50688;
 //	tetro[13] = 61440;
 //	tetro[14] = 35008;
@@ -326,10 +346,13 @@ int main()
 	{
 		map = fillfigure(map, tetr, sqrsize, letter);
 		letter++;
-		tetr = tetr->next;
+		if (tetr->next != NULL)
+			tetr = tetr->next;
 	}
+	freelist(tetr);
 	ft_putstr(map);
 	free(map);
+	free(tetro);
 	end = clock();
 	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 	printf("time %f\n", cpu_time_used);
