@@ -14,7 +14,7 @@ int				main(void)
 	char 		letter;
 	int			tetramount;
 
-	tetramount = 6;
+	tetramount = 5;
 	tetro = (uint64_t *)malloc(sizeof(uint64_t) * tetramount);
 //	tetro[0] = 52224;
 //	tetro[1] = 35968;
@@ -34,7 +34,7 @@ int				main(void)
 	tetro[2] = 35008;
 	tetro[3] = 50688;
 	tetro[4] = 19520;
-	tetro[5] = 35968;
+//	tetro[5] = 35968;
 //	tetro[6] = 50688;
 //	tetro[7] = 52224;
 //	tetro[8] = 57856;
