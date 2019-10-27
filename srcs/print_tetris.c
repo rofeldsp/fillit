@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fillit.h"
+//#include "fillit.h"
+#include "../includes/fillit.h"
 
 char			*map_to_print(int sqrsize)
 {

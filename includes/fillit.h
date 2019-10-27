@@ -3,7 +3,7 @@
 
 # include <stdio.h> // remove later
 # include <stdlib.h>
-# include "libft/libft.h" // substitute to libft.h and add trace to makefile
+# include "../libft/libft.h" // substitute to libft.h and add trace to makefile
 
 typedef struct		t_list
 {

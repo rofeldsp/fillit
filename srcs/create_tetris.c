@@ -6,11 +6,11 @@
 /*   By: rofeldsp <rofeldsp@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/27 12:36:37 by rofeldsp          #+#    #+#             */
-/*   Updated: 2019/10/27 12:37:06 by rofeldsp         ###   ########.fr       */
+/*   Updated: 2019/10/27 16:51:38 by rofeldsp         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fillit.h"
+#include "../includes/fillit.h" //
 
 int				checkheight(node *tetr)
 {

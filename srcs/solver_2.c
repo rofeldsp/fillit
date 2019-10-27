@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fillit.h"
+//#include "fillit.h"
+#include "../includes/fillit.h"
 
 int				linebreak(node *tetr, int sqrsize)
 {

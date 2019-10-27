@@ -1,5 +1,6 @@
 #include <stdio.h> // delete later
-#include "fillit.h"
+//#include "fillit.h"
+#include "../includes/fillit.h"
 #include <time.h> // убрать
 
 int				main(void)
@@ -14,7 +15,7 @@ int				main(void)
 	char 		letter;
 	int			tetramount;
 
-	tetramount = 5;
+	tetramount = 12;
 	tetro = (uint64_t *)malloc(sizeof(uint64_t) * tetramount);
 //	tetro[0] = 52224;
 //	tetro[1] = 35968;
@@ -34,13 +35,13 @@ int				main(void)
 	tetro[2] = 35008;
 	tetro[3] = 50688;
 	tetro[4] = 19520;
-//	tetro[5] = 35968;
-//	tetro[6] = 50688;
-//	tetro[7] = 52224;
-//	tetro[8] = 57856;
-//	tetro[9] = 61440;
-//	tetro[10] = 57856;
-//	tetro[11] = 50240;
+	tetro[5] = 35968;
+	tetro[6] = 50688;
+	tetro[7] = 52224;
+	tetro[8] = 57856;
+	tetro[9] = 61440;
+	tetro[10] = 57856;
+	tetro[11] = 50240;
 //	tetro[0] = 61440;
 //	tetro[0] = 50688;
 //	tetro[0] = 34952;

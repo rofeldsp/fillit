@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fillit.h"
+//#include "fillit.h"
+#include "../includes/fillit.h"
 
 node			*move_to_start(node *tetr)
 {
@@ -39,7 +40,7 @@ int				fill_map(uint16_t *map, int sqrsize, node *tetr)
 					if (!(tetr = move_to_start(tetr)))
 						return (-1);
 					if (tetr->prev == NULL)
-						return (fill_map(map, sqrsize, tetr = tetr));
+						return (fill_map(map, sqrsize, tetr));
 					tetr = tetr->prev;
 					break ;
 				}
