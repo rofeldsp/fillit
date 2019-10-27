@@ -1,4 +1,4 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/rofeldsp/fillit
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/rofeldsp/fillit_own_git
 -- Configuring done
 -- Generating done
--- Build files have been written to: /Users/rofeldsp/fillit/cmake-build-debug
+-- Build files have been written to: /Users/rofeldsp/fillit_own_git/cmake-build-debug

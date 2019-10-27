@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.14)
-project(fillit C)
+project(fillit_own_git C)
 
 set(CMAKE_C_STANDARD 11)
 
 include_directories(.)
 include_directories(libft)
 
-add_executable(fillit
+add_executable(fillit_own_git
         libft/ft_atoi.c
         libft/ft_bzero.c
         libft/ft_isalnum.c
@@ -67,4 +67,8 @@ add_executable(fillit
         libft/ft_toupper.c
         libft/libft.h
         fillit.h
-        main.c)
+        main.c
+        create_tetris.c
+        ft_power_fillit.c
+        freelinkedlist.c
+        ft_sqrt_round.c print_tetris.c solver_1.c solver_2.c)
